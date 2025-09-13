@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Futuristic Countdown Launch</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      background: radial-gradient(circle at center, #000010, #020024, #090979, #00d4ff);
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffe5;
+      overflow: hidden;
+    }
+
+    .launch-btn {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      border: 2px solid #00ffe5;
+      background: rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 0 15px #00ffe5, inset 0 0 10px rgba(0, 255, 229, 0.5);
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffe5;
+    }
+
+    .launch-btn::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      border-radius: 50%;
+      background: linear-gradient(90deg, #00fff7, #0072ff, #ff00ff, #00fff7);
+      background-size: 300%;
+      z-index: -1;
+      animation: glowingBorder 4s linear infinite;
+    }
+
+    @keyframes glowingBorder {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .btn-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-content .icon {
+      font-size: 6rem;
+      margin-bottom: 10px;
+      display: inline-block;
+      transform: rotate(-45deg);
+      /* Bikin roket tegak ke atas */
+      animation: rocketWobble 1.5s infinite ease-in-out;
+    }
+
+    /* Animasi goyang kecil */
+    @keyframes rocketWobble {
+      0% {
+        transform: rotate(-45deg) translateY(0);
+      }
+
+      25% {
+        transform: rotate(-48deg) translateY(-2px);
+      }
+
+      50% {
+        transform: rotate(-45deg) translateY(0);
+      }
+
+      75% {
+        transform: rotate(-42deg) translateY(-2px);
+      }
+
+      100% {
+        transform: rotate(-45deg) translateY(0);
+      }
+    }
+
+    .btn-content .text {
+      font-size: 4.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Efek hover tombol */
+    .launch-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 40px #00ffe5, 0 0 80px #ff00ff;
+      color: #fff;
+    }
+
+    /* Hover lebih tinggi */
+    .launch-btn:hover .icon {
+      transform: rotate(-45deg) translateY(-10px);
+    }
+
+    .launch-btn:active {
+      transform: scale(0.95);
+    }
+
+    .countdown-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      display: none;
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(-90deg);
+    }
+
+    .countdown {
+      font-size: 12rem;
+      font-weight: bold;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 0 40px #00fff7, 0 0 80px #00fff7, 0 0 120px #00fff7;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+
+      to {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 0.7;
+      }
+    }
+
+    /* Video fullscreen */
+    #videoPlayer {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <button class="launch-btn" id="launchButton">
+    <div class="btn-content">
+      <div class="icon">🚀</div>
+      <div class="text">Launch</div>
+    </div>
+  </button>
+
+  <div class="countdown-container" id="countdownContainer">
+    <svg width="500" height="500">
+      <circle cx="250" cy="250" r="220" stroke="#222" stroke-width="16" fill="none" />
+      <circle id="progressCircle" cx="250" cy="250" r="220" stroke="#00ffe5" stroke-width="16" fill="none"
+        stroke-linecap="round" stroke-dasharray="1382" stroke-dashoffset="0"
+        style="filter: drop-shadow(0 0 20px #00ffe5);" />
+    </svg>
+    <div class="countdown" id="countdown">10</div>
+  </div>
+
+  <!-- Video player -->
+  <video id="videoPlayer" autoplay playsinline controls>
+    <source src="mura.mp4" type="video/mp4">
+    Browser kamu tidak mendukung video HTML5.
+  </video>
+
+  <script>
+    const button = document.getElementById("launchButton");
+    const countdownContainer = document.getElementById("countdownContainer");
+    const countdown = document.getElementById("countdown");
+    const progressCircle = document.getElementById("progressCircle");
+    const videoPlayer = document.getElementById("videoPlayer");
+
+    const radius = 220;
+    const circumference = 2 * Math.PI * radius;
+    progressCircle.style.strokeDasharray = circumference;
+
+    button.addEventListener("click", () => {
+      button.style.display = "none";
+      countdownContainer.style.display = "block";
+
+      let timeLeft = 10;
+
+      const interval = setInterval(() => {
+        countdown.textContent = timeLeft;
+
+        const progress = timeLeft / 10;
+        progressCircle.style.strokeDashoffset = circumference * (1 - progress);
+
+        if (timeLeft === 0) {
+          clearInterval(interval);
+          setTimeout(() => {
+            countdownContainer.style.display = "none";
+            videoPlayer.style.display = "block";
+            videoPlayer.play();
+          }, 1000); // tunggu sebentar di angka 0 sebelum play
+        }
+        timeLeft--;
+      }, 1000);
+    });
+
+    // setelah video selesai → redirect
+    videoPlayer.addEventListener("ended", () => {
+      window.location.href = "https://saritamura.murungrayakab.go.id/dataset/"; // ganti link tujuan
+    });
+  </script>
+
+</body>
+
+</html>
